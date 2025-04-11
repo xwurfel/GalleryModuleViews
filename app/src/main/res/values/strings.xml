@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">GalleryModule</string>
+    <string name="custom_gallery_title">Custom Title</string>
+    <string name="no_media_found">No media found!</string>
+    <string name="selection_counter">There are %d items</string>
+    <string name="done">Done</string>
+</resources>
