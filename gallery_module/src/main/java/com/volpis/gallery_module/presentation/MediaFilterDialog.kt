@@ -122,6 +122,13 @@ class MediaFilterDialog : BottomSheetDialogFragment() {
             updateDateRangeText(startDate, endDate)
         }
 
+        dateRangePicker.addOnNegativeButtonClickListener {
+            currentFilter = currentFilter.copy(dateRange = null)
+            updateDateRangeText(null, null)
+        }
+
+        dateRangePicker.addOnCancelListener {}
+
         dateRangePicker.show(parentFragmentManager, "DATE_RANGE_PICKER")
     }
 
