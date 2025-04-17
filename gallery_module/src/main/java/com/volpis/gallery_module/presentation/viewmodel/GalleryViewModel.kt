@@ -242,11 +242,14 @@ class GalleryViewModel(
             _uiState.value = GalleryUiState.Loading
             _selectedItems.value = emptyList()
 
+            val currentFilter = _currentFilter.value
+            val updatedFilter = currentFilter.copy(albumIds = null)
+            _currentFilter.value = updatedFilter
+
+            _currentAlbumId.value = albumId
             if (albumId != null) {
-                _currentAlbumId.value = albumId
                 loadAlbumMedia(albumId)
             } else {
-                _currentAlbumId.value = null
                 loadInitialData()
             }
         }
@@ -255,9 +258,15 @@ class GalleryViewModel(
     fun updateFilter(filter: MediaFilter) {
         viewModelScope.launch {
             _uiState.value = GalleryUiState.Loading
-
-            _currentFilter.value = filter
             val currentAlbumId = _currentAlbumId.value
+
+            val updatedFilter = if (currentAlbumId != null) {
+                filter.copy(albumIds = null)
+            } else {
+                filter
+            }
+            _currentFilter.value = updatedFilter
+
             when {
                 currentAlbumId != null -> loadAlbumMedia(currentAlbumId)
                 config.groupByAlbum -> loadAlbums()

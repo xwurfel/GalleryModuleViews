@@ -491,7 +491,7 @@ class DeviceMediaRepositoryImpl(
                     MediaType.VIDEO -> MediaStore.Video.Media.DATE_MODIFIED
                 }
 
-                selectionCriteria.add("$dateColumn BETWEEN $startTimestamp AND $endTimestamp")
+                selectionCriteria.add("$dateColumn BETWEEN ? AND ?")
             }
         }
 
