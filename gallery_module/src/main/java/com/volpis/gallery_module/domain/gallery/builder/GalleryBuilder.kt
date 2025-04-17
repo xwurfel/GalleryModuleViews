@@ -1,15 +1,15 @@
-package com.volpis.gallery_module.domain.builder
+package com.volpis.gallery_module.domain.gallery.builder
 
 import android.content.Context
 import android.graphics.Typeface
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
-import com.volpis.gallery_module.domain.model.CloudProviderType
-import com.volpis.gallery_module.domain.model.GalleryConfig
-import com.volpis.gallery_module.domain.model.SelectionMode
-import com.volpis.gallery_module.domain.model.ViewMode
-import com.volpis.gallery_module.domain.model.media.MediaItem
-import com.volpis.gallery_module.domain.model.media.MediaType
+import com.volpis.gallery_module.domain.cloud.CloudProviderType
+import com.volpis.gallery_module.domain.gallery.model.GalleryConfig
+import com.volpis.gallery_module.domain.gallery.model.SelectionMode
+import com.volpis.gallery_module.domain.gallery.model.ViewMode
+import com.volpis.gallery_module.domain.media.model.MediaItem
+import com.volpis.gallery_module.domain.media.model.MediaType
 import com.volpis.gallery_module.presentation.GalleryFragment
 
 @Suppress("UNUSED")

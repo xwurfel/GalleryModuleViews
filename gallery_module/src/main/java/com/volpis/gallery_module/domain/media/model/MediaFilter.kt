@@ -1,7 +1,7 @@
-package com.volpis.gallery_module.domain.model.media
+package com.volpis.gallery_module.domain.media.model
 
 import android.os.Parcelable
-import com.volpis.gallery_module.domain.model.CloudProviderType
+import com.volpis.gallery_module.domain.cloud.CloudProviderType
 import kotlinx.parcelize.Parcelize
 import java.util.Date
 

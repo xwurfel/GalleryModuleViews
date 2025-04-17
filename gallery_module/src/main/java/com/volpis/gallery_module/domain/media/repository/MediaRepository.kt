@@ -1,10 +1,9 @@
-package com.volpis.gallery_module.domain.repository
+package com.volpis.gallery_module.domain.media.repository
 
-
-import com.volpis.gallery_module.domain.model.CloudProviderType
-import com.volpis.gallery_module.domain.model.media.MediaFilter
-import com.volpis.gallery_module.domain.model.media.MediaItem
-import com.volpis.gallery_module.domain.model.media.MediaResult
+import com.volpis.gallery_module.domain.cloud.CloudProviderType
+import com.volpis.gallery_module.domain.media.model.MediaFilter
+import com.volpis.gallery_module.domain.media.model.MediaItem
+import com.volpis.gallery_module.domain.media.model.MediaResult
 import kotlinx.coroutines.flow.Flow
 
 

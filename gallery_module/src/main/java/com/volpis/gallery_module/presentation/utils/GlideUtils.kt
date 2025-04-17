@@ -3,7 +3,7 @@ package com.volpis.gallery_module.presentation.utils
 import android.content.Context
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.volpis.gallery_module.domain.model.media.MediaItem
+import com.volpis.gallery_module.domain.media.model.MediaItem
 import com.volpis.gallery_module.presentation.adapters.MediaAdapter
 import kotlin.collections.take
 

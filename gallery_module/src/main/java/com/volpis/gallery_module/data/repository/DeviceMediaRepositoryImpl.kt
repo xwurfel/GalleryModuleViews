@@ -8,9 +8,9 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import androidx.core.net.toUri
-import com.volpis.gallery_module.domain.model.media.*
-import com.volpis.gallery_module.domain.repository.MediaRepository
-import com.volpis.gallery_module.domain.repository.PermissionHandler
+import com.volpis.gallery_module.domain.media.model.*
+import com.volpis.gallery_module.domain.media.repository.MediaRepository
+import com.volpis.gallery_module.domain.media.repository.PermissionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -483,9 +483,6 @@ class DeviceMediaRepositoryImpl(
             val endDate = filter.dateRange.second
 
             if (startDate != null && endDate != null) {
-                val startTimestamp = startDate.time / 1000
-                val endTimestamp = endDate.time / 1000
-
                 val dateColumn = when (type) {
                     MediaType.IMAGE -> MediaStore.Images.Media.DATE_MODIFIED
                     MediaType.VIDEO -> MediaStore.Video.Media.DATE_MODIFIED

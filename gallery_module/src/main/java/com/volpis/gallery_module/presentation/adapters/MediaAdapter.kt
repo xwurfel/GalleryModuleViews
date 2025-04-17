@@ -18,10 +18,10 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.volpis.gallery_module.R
-import com.volpis.gallery_module.domain.model.GalleryConfig
-import com.volpis.gallery_module.domain.model.ViewMode
-import com.volpis.gallery_module.domain.model.media.MediaItem
-import com.volpis.gallery_module.presentation.RoundedCornersTransformation
+import com.volpis.gallery_module.domain.gallery.model.GalleryConfig
+import com.volpis.gallery_module.domain.gallery.model.ViewMode
+import com.volpis.gallery_module.domain.media.model.MediaItem
+import com.volpis.gallery_module.presentation.utils.RoundedCornersTransformation
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 

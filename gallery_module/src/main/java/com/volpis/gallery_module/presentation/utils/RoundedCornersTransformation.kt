@@ -1,6 +1,11 @@
-package com.volpis.gallery_module.presentation
+package com.volpis.gallery_module.presentation.utils
 
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.BitmapShader
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.RectF
+import android.graphics.Shader
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation
 import java.security.MessageDigest
@@ -10,7 +15,7 @@ class RoundedCornersTransformation(
     private val margin: Int = 0,
 ) : BitmapTransformation() {
 
-    private val id = "com.volpis.gallery_views.RoundedCornersTransformation"
+    private val id = RoundedCornersTransformation::class.simpleName ?: "RoundedCornersTransformation"
     private val idBytes = id.toByteArray(CHARSET)
 
     override fun updateDiskCacheKey(messageDigest: MessageDigest) {

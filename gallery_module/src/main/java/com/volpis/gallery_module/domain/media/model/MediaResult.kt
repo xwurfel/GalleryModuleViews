@@ -1,4 +1,4 @@
-package com.volpis.gallery_module.domain.model.media
+package com.volpis.gallery_module.domain.media.model
 
 sealed interface MediaResult {
     data class Success(val items: List<MediaItem>) : MediaResult

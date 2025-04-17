@@ -1,8 +1,8 @@
 package com.volpis.gallery_module.presentation.viewmodel
 
-import com.volpis.gallery_module.domain.model.ViewMode
-import com.volpis.gallery_module.domain.model.media.MediaAlbum
-import com.volpis.gallery_module.domain.model.media.MediaItem
+import com.volpis.gallery_module.domain.gallery.model.ViewMode
+import com.volpis.gallery_module.domain.media.model.MediaAlbum
+import com.volpis.gallery_module.domain.media.model.MediaItem
 
 sealed class GalleryUiState {
     object Loading : GalleryUiState()

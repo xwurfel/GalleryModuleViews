@@ -4,10 +4,10 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.volpis.gallery_module.domain.model.SelectionMode
-import com.volpis.gallery_module.domain.model.ViewMode
-import com.volpis.gallery_module.domain.model.media.MediaItem
-import com.volpis.gallery_module.domain.builder.GalleryBuilder
+import com.volpis.gallery_module.domain.gallery.model.SelectionMode
+import com.volpis.gallery_module.domain.gallery.model.ViewMode
+import com.volpis.gallery_module.domain.media.model.MediaItem
+import com.volpis.gallery_module.domain.gallery.builder.GalleryBuilder
 
 class MainActivity : AppCompatActivity() {
 

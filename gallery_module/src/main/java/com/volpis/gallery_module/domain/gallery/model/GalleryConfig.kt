@@ -1,4 +1,4 @@
-package com.volpis.gallery_module.domain.model
+package com.volpis.gallery_module.domain.gallery.model
 
 import android.graphics.Typeface
 import android.os.Parcelable
@@ -6,7 +6,8 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import com.volpis.gallery_module.domain.model.media.MediaItem
+import com.volpis.gallery_module.domain.cloud.CloudProviderType
+import com.volpis.gallery_module.domain.media.model.MediaItem
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.RawValue
@@ -198,16 +199,4 @@ data class GalleryConfig(
             return config
         }
     }
-}
-
-enum class SelectionMode {
-    SINGLE, MULTIPLE
-}
-
-enum class ViewMode {
-    LIST, GRID
-}
-
-enum class CloudProviderType {
-    GOOGLE_DRIVE, DROPBOX, ONE_DRIVE, CUSTOM
 }

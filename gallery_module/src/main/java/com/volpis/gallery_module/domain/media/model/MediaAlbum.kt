@@ -1,4 +1,4 @@
-package com.volpis.gallery_module.domain.model.media
+package com.volpis.gallery_module.domain.media.model
 
 import android.net.Uri
 import java.util.Date

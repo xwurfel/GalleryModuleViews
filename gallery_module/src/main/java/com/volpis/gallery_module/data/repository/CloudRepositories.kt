@@ -1,11 +1,11 @@
 package com.volpis.gallery_module.data.repository
 
 
-import com.volpis.gallery_module.domain.model.media.MediaFilter
-import com.volpis.gallery_module.domain.model.media.MediaItem
-import com.volpis.gallery_module.domain.model.media.MediaResult
-import com.volpis.gallery_module.domain.repository.MediaRepository
-import com.volpis.gallery_module.domain.repository.PermissionHandler
+import com.volpis.gallery_module.domain.media.model.MediaFilter
+import com.volpis.gallery_module.domain.media.model.MediaItem
+import com.volpis.gallery_module.domain.media.model.MediaResult
+import com.volpis.gallery_module.domain.media.repository.MediaRepository
+import com.volpis.gallery_module.domain.media.repository.PermissionHandler
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 

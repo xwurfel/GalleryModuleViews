@@ -11,9 +11,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.volpis.gallery_module.R
-import com.volpis.gallery_module.domain.model.GalleryConfig
-import com.volpis.gallery_module.domain.model.media.MediaAlbum
-import com.volpis.gallery_module.presentation.RoundedCornersTransformation
+import com.volpis.gallery_module.domain.gallery.model.GalleryConfig
+import com.volpis.gallery_module.domain.media.model.MediaAlbum
+import com.volpis.gallery_module.presentation.utils.RoundedCornersTransformation
 
 
 class AlbumAdapter(

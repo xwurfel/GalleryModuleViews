@@ -13,9 +13,9 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.slider.RangeSlider
 import com.volpis.gallery_module.R
-import com.volpis.gallery_module.domain.model.media.MediaFilter
-import com.volpis.gallery_module.domain.model.media.MediaSortOption
-import com.volpis.gallery_module.domain.model.media.MediaType
+import com.volpis.gallery_module.domain.media.model.MediaFilter
+import com.volpis.gallery_module.domain.media.model.MediaSortOption
+import com.volpis.gallery_module.domain.media.model.MediaType
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
