@@ -12,9 +12,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.*
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -28,6 +26,8 @@ import com.volpis.gallery_module.domain.repository.CompositeMediaRepository
 import com.volpis.gallery_module.domain.repository.PermissionHandler
 import com.volpis.gallery_module.presentation.adapters.AlbumAdapter
 import com.volpis.gallery_module.presentation.adapters.MediaAdapter
+import com.volpis.gallery_module.presentation.utils.GlideUtils
+import com.volpis.gallery_module.presentation.utils.preloadItemImages
 import com.volpis.gallery_module.presentation.viewmodel.GalleryUiState
 import com.volpis.gallery_module.presentation.viewmodel.GalleryViewModel
 import kotlinx.coroutines.launch
@@ -64,6 +64,12 @@ class GalleryFragment : Fragment() {
     private var _binding: FragmentGalleryBinding? = null
     private val binding get() = _binding!!
 
+    private val lifecycleObserver = object : DefaultLifecycleObserver {
+        override fun onStop(owner: LifecycleOwner) {
+            GlideUtils.clearMemoryCache(requireContext())
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -89,6 +95,8 @@ class GalleryFragment : Fragment() {
 
         val factory = GalleryViewModel.Factory(mediaRepository, config)
         viewModel = ViewModelProvider(this, factory)[GalleryViewModel::class.java]
+
+        lifecycle.addObserver(lifecycleObserver)
     }
 
     override fun onCreateView(
@@ -114,7 +122,7 @@ class GalleryFragment : Fragment() {
                     searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                         override fun onQueryTextSubmit(query: String?): Boolean {
                             if (!query.isNullOrBlank()) {
-                                val filter = MediaFilter(searchQuery = query)
+                                val filter = viewModel.currentFilter.value.copy(searchQuery = query)
                                 viewModel.updateFilter(filter)
                             }
                             return true
@@ -122,7 +130,7 @@ class GalleryFragment : Fragment() {
 
                         override fun onQueryTextChange(newText: String?): Boolean {
                             if (newText.isNullOrBlank()) {
-                                val filter = MediaFilter()
+                                val filter = viewModel.currentFilter.value.copy(searchQuery = null)
                                 viewModel.updateFilter(filter)
                             }
                             return true
@@ -132,6 +140,7 @@ class GalleryFragment : Fragment() {
                     menu.findItem(R.id.action_search)?.isVisible = false
                 }
 
+                menu.findItem(R.id.action_filter)?.isVisible = config.enableFiltering
                 val toggleViewItem = menu.findItem(R.id.action_toggle_view)
                 toggleViewItem.isVisible = config.allowViewModeToggle
             }
@@ -140,6 +149,11 @@ class GalleryFragment : Fragment() {
                 return when (menuItem.itemId) {
                     R.id.action_toggle_view -> {
                         viewModel.toggleViewMode()
+                        true
+                    }
+
+                    R.id.action_filter -> {
+                        showFilterDialog()
                         true
                     }
 
@@ -156,6 +170,7 @@ class GalleryFragment : Fragment() {
         setupToolbar()
         setupAdapters()
         setupRecyclerViews()
+        setupPreloading()
         setupButtons()
         observeViewModel()
         applyCustomizations()
@@ -180,7 +195,18 @@ class GalleryFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        lifecycle.removeObserver(lifecycleObserver)
         _binding = null
+    }
+
+    override fun onPause() {
+        super.onPause()
+        GlideUtils.clearMemoryCache(requireContext())
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        binding.mediaRecyclerView.clearOnScrollListeners()
     }
 
     private fun setupToolbar() {
@@ -298,9 +324,21 @@ class GalleryFragment : Fragment() {
                         }
                     }
 
+                    mediaAdapter.setCurrentAlbumId(state.currentAlbumId)
                     mediaAdapter.setViewMode(state.viewMode)
                     mediaAdapter.setSelectedItems(state.selectedItems)
-                    mediaAdapter.submitList(state.mediaItems)
+
+                    if (state.mediaItems.isNotEmpty()) {
+                        binding.loadingProgress.isVisible = true
+
+                        recyclerView.post {
+                            mediaAdapter.submitList(state.mediaItems) {
+                                binding.loadingProgress.isVisible = false
+                            }
+                        }
+                    } else {
+                        mediaAdapter.submitList(state.mediaItems)
+                    }
 
                     if (state.currentAlbumId != null) {
                         val album = state.albums.find { it.id == state.currentAlbumId }
@@ -353,6 +391,16 @@ class GalleryFragment : Fragment() {
         }
     }
 
+    private fun setupPreloading() {
+        binding.mediaRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    mediaAdapter.preloadItemImages(requireContext())
+                }
+            }
+        })
+    }
+
     private fun applyCustomizations() {
         config.backgroundColor?.let { colorResId ->
             binding.root.setBackgroundColor(requireContext().getColor(colorResId))
@@ -367,6 +415,25 @@ class GalleryFragment : Fragment() {
             binding.doneButton.typeface = typeface
             binding.grantPermissionButton.typeface = typeface
         }
+    }
+
+    private fun showFilterDialog() {
+        if (!config.enableFiltering) {
+            Toast.makeText(requireContext(), R.string.filtering_disabled, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val currentFilter = viewModel.currentFilter.value
+
+        val dialog = MediaFilterDialog.newInstance(currentFilter)
+
+        dialog.setOnFilterAppliedListener(object : MediaFilterDialog.OnFilterAppliedListener {
+            override fun onFilterApplied(filter: MediaFilter) {
+                viewModel.updateFilter(filter)
+            }
+        })
+
+        dialog.show(childFragmentManager, "FILTER_DIALOG")
     }
 
     private class FragmentPermissionHandler(

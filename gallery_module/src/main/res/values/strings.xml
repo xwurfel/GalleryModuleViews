@@ -41,4 +41,5 @@
         <item quantity="other">%d items</item>
     </plurals>
 
+    <string name="filtering_disabled">Filtering is disabled</string>
 </resources>

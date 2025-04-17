@@ -25,9 +25,11 @@ class GalleryViewModel(
     private val _uiState = MutableStateFlow<GalleryUiState>(GalleryUiState.Loading)
     val uiState: StateFlow<GalleryUiState> = _uiState
 
+    private val _currentFilter = MutableStateFlow(MediaFilter())
+    val currentFilter: StateFlow<MediaFilter> = _currentFilter
+
     private val _viewMode = MutableStateFlow(config.defaultViewMode)
     private val _columnCount = MutableStateFlow(config.defaultGridColumns)
-    private val _currentFilter = MutableStateFlow(MediaFilter())
     private val _selectedItems = MutableStateFlow<List<MediaItem>>(emptyList())
     private val _currentAlbumId = MutableStateFlow<String?>(config.defaultOpenAlbum)
 
@@ -93,6 +95,10 @@ class GalleryViewModel(
                     _uiState.value = GalleryUiState.Error(result.message)
                 }
 
+                MediaResult.Loading -> {
+                    _uiState.value = GalleryUiState.Loading
+                }
+
                 else -> {
                     _uiState.value = GalleryUiState.Empty
                 }
@@ -101,46 +107,56 @@ class GalleryViewModel(
     }
 
     private suspend fun loadAlbumMedia(albumId: String) {
-        _currentAlbumId.value = albumId
-
         mediaRepository.getAlbumMediaItems(albumId, _currentFilter.value).collect { result ->
-            when (result) {
-                is MediaResult.Success -> {
-                    val items = result.items
-                    if (items.isEmpty()) {
-                        _uiState.value = GalleryUiState.Empty
-                    } else {
-                        when (val current = _uiState.value) {
-                            is GalleryUiState.Success -> {
-                                _uiState.value = current.copy(
-                                    mediaItems = items, currentAlbumId = albumId
-                                )
-                            }
+            if (_currentAlbumId.value == albumId) {
+                when (result) {
+                    is MediaResult.Success -> {
+                        val items = result.items
+                        if (items.isEmpty()) {
+                            _uiState.value = GalleryUiState.Empty
+                        } else {
+                            when (val current = _uiState.value) {
+                                is GalleryUiState.Success -> {
+                                    _uiState.value = current.copy(
+                                        mediaItems = items, currentAlbumId = albumId
+                                    )
+                                }
 
-                            else -> {
-                                mediaRepository.getMediaAlbums().collect { albumsResult ->
-                                    if (albumsResult is MediaResult.AlbumsSuccess) {
-                                        _uiState.value = GalleryUiState.Success(
-                                            albums = albumsResult.albums,
-                                            mediaItems = items,
-                                            selectedItems = _selectedItems.value,
-                                            viewMode = _viewMode.value,
-                                            columnCount = _columnCount.value,
-                                            currentAlbumId = albumId
-                                        )
+                                else -> {
+                                    mediaRepository.getMediaAlbums().collect { albumsResult ->
+                                        if (_currentAlbumId.value == albumId) {
+                                            if (albumsResult is MediaResult.AlbumsSuccess) {
+                                                _uiState.value = GalleryUiState.Success(
+                                                    albums = albumsResult.albums,
+                                                    mediaItems = items,
+                                                    selectedItems = _selectedItems.value,
+                                                    viewMode = _viewMode.value,
+                                                    columnCount = _columnCount.value,
+                                                    currentAlbumId = albumId
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }
 
-                is MediaResult.Error -> {
-                    _uiState.value = GalleryUiState.Error(result.message)
-                }
+                    is MediaResult.Error -> {
+                        if (_currentAlbumId.value == albumId) {
+                            _uiState.value = GalleryUiState.Error(result.message)
+                        }
+                    }
 
-                else -> {
-                    _uiState.value = GalleryUiState.Empty
+                    MediaResult.Loading -> {
+                        _uiState.value = GalleryUiState.Loading
+                    }
+
+                    else -> {
+                        if (_currentAlbumId.value == albumId) {
+                            _uiState.value = GalleryUiState.Empty
+                        }
+                    }
                 }
             }
         }
@@ -223,7 +239,11 @@ class GalleryViewModel(
 
     fun openAlbum(albumId: String?) {
         viewModelScope.launch {
+            _uiState.value = GalleryUiState.Loading
+            _selectedItems.value = emptyList()
+
             if (albumId != null) {
+                _currentAlbumId.value = albumId
                 loadAlbumMedia(albumId)
             } else {
                 _currentAlbumId.value = null
@@ -233,8 +253,17 @@ class GalleryViewModel(
     }
 
     fun updateFilter(filter: MediaFilter) {
-        _currentFilter.value = filter
-        loadInitialData()
+        viewModelScope.launch {
+            _uiState.value = GalleryUiState.Loading
+
+            _currentFilter.value = filter
+            val currentAlbumId = _currentAlbumId.value
+            when {
+                currentAlbumId != null -> loadAlbumMedia(currentAlbumId)
+                config.groupByAlbum -> loadAlbums()
+                else -> loadAllMedia()
+            }
+        }
     }
 
     fun confirmSelection() {

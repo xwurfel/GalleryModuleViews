@@ -109,8 +109,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showMediaPreview(item: MediaItem) {
-        // Implementation for showing a media preview
-        // This could launch a full-screen image/video viewer
         val mediaType = if (item.isVideo) "Video" else "Image"
         Toast.makeText(this, "Preview $mediaType: ${item.name}", Toast.LENGTH_SHORT).show()
     }

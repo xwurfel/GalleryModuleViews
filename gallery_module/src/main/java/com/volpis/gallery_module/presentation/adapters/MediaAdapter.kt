@@ -9,11 +9,14 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
 import com.volpis.gallery_module.R
 import com.volpis.gallery_module.domain.model.GalleryConfig
 import com.volpis.gallery_module.domain.model.ViewMode
@@ -35,6 +38,8 @@ class MediaAdapter(
 
     private var viewMode = config.defaultViewMode
     private var selectedItems: List<MediaItem> = emptyList()
+
+    private var currentAlbumId: String? = null
 
     fun setViewMode(mode: ViewMode) {
         viewMode = mode
@@ -59,6 +64,13 @@ class MediaAdapter(
         }
 
         itemsToUpdate.forEach { notifyItemChanged(it) }
+    }
+
+    fun setCurrentAlbumId(albumId: String?) {
+        if (currentAlbumId != albumId) {
+            currentAlbumId = albumId
+            submitList(null)
+        }
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -95,15 +107,27 @@ class MediaAdapter(
         }
     }
 
+    override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
+        super.onViewRecycled(holder)
+
+        when (holder) {
+            is GridViewHolder -> holder.clear()
+            is ListViewHolder -> holder.clear()
+        }
+    }
+
     class GridViewHolder(
         itemView: View,
         private val config: GalleryConfig,
     ) : RecyclerView.ViewHolder(itemView) {
         private val thumbnailView: ImageView = itemView.findViewById(R.id.media_thumbnail)
         private val selectedIndicator: View = itemView.findViewById(R.id.selected_indicator)
+        private val checkIndicator: View = itemView.findViewById(R.id.check_indicator)
         private val durationView: TextView = itemView.findViewById(R.id.video_duration)
         private val nonLocalIndicator: ImageView = itemView.findViewById(R.id.non_local_indicator)
         private val videoIndicator: ImageView = itemView.findViewById(R.id.video_indicator)
+
+        private var currentRequestTarget: Target<*>? = null
 
         fun bind(
             item: MediaItem,
@@ -113,7 +137,13 @@ class MediaAdapter(
         ) {
             val context = itemView.context
 
+            clear()
+
             var requestOptions = RequestOptions()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .skipMemoryCache(false)
+
+
             config.thumbnailCornerRadius?.let { radius ->
                 val cornerRadius = context.resources.getDimensionPixelSize(radius)
                 requestOptions =
@@ -128,7 +158,9 @@ class MediaAdapter(
                 requestOptions = requestOptions.error(error)
             }
 
-            Glide.with(context).load(item.uri).apply(requestOptions).into(thumbnailView)
+            currentRequestTarget = Glide.with(context).load(item.uri).apply(requestOptions)
+                .thumbnail(0.1f)
+                .into(thumbnailView)
 
             if (item.isVideo && config.showVideoDuration && item.duration != null) {
                 durationView.visibility = View.VISIBLE
@@ -148,7 +180,8 @@ class MediaAdapter(
                 nonLocalIndicator.visibility = View.GONE
             }
 
-            selectedIndicator.visibility = if (isSelected) View.VISIBLE else View.GONE
+            selectedIndicator.isVisible = isSelected
+            checkIndicator.isVisible = isSelected
 
             if (isSelected) {
                 config.selectedIndicatorDrawable?.let { drawable ->
@@ -166,6 +199,12 @@ class MediaAdapter(
                 onLongClick(item)
                 true
             }
+        }
+
+        fun clear() {
+            Glide.with(itemView.context).clear(thumbnailView)
+            thumbnailView.setImageDrawable(null)
+            currentRequestTarget = null
         }
 
         private fun formatDuration(durationMs: Long): String {
@@ -190,11 +229,14 @@ class MediaAdapter(
     ) : RecyclerView.ViewHolder(itemView) {
         private val thumbnailView: ImageView = itemView.findViewById(R.id.media_thumbnail)
         private val selectedIndicator: View = itemView.findViewById(R.id.selected_indicator)
+        private val checkIndicator: View = itemView.findViewById(R.id.check_indicator)
         private val titleView: TextView = itemView.findViewById(R.id.media_title)
         private val subtitleView: TextView = itemView.findViewById(R.id.media_subtitle)
         private val durationView: TextView = itemView.findViewById(R.id.video_duration)
         private val nonLocalIndicator: ImageView = itemView.findViewById(R.id.non_local_indicator)
         private val videoIndicator: ImageView = itemView.findViewById(R.id.video_indicator)
+
+        private var currentRequestTarget: Target<*>? = null
 
         fun bind(
             item: MediaItem,
@@ -203,12 +245,18 @@ class MediaAdapter(
             onLongClick: (MediaItem) -> Unit,
         ) {
             val context = itemView.context
-            var requestOptions = RequestOptions()
+
+            clear()
+
+            var requestOptions = RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL)
+                .skipMemoryCache(false)
+
             config.thumbnailCornerRadius?.let { radius ->
                 val cornerRadius = context.resources.getDimensionPixelSize(radius)
                 requestOptions =
                     requestOptions.transform(RoundedCornersTransformation(cornerRadius))
             }
+
             config.placeholderImage?.let { placeholder ->
                 requestOptions = requestOptions.placeholder(placeholder)
             }
@@ -217,7 +265,9 @@ class MediaAdapter(
                 requestOptions = requestOptions.error(error)
             }
 
-            Glide.with(context).load(item.uri).apply(requestOptions).into(thumbnailView)
+            currentRequestTarget = Glide.with(context).load(item.uri).apply(requestOptions)
+                .thumbnail(0.1f)
+                .into(thumbnailView)
 
             titleView.text = item.name
 
@@ -252,7 +302,8 @@ class MediaAdapter(
                 nonLocalIndicator.visibility = View.GONE
             }
 
-            selectedIndicator.visibility = if (isSelected) View.VISIBLE else View.GONE
+            selectedIndicator.isVisible = isSelected
+            checkIndicator.isVisible = isSelected
 
             if (isSelected) {
                 config.selectedIndicatorDrawable?.let { drawable ->
@@ -270,6 +321,12 @@ class MediaAdapter(
                 onLongClick(item)
                 true
             }
+        }
+
+        fun clear() {
+            Glide.with(itemView.context).clear(thumbnailView)
+            thumbnailView.setImageDrawable(null)
+            currentRequestTarget = null
         }
 
         private fun formatDuration(durationMs: Long): String {

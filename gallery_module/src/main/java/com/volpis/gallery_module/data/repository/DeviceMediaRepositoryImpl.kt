@@ -13,6 +13,7 @@ import com.volpis.gallery_module.domain.repository.MediaRepository
 import com.volpis.gallery_module.domain.repository.PermissionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import java.util.Date
@@ -60,14 +61,16 @@ class DeviceMediaRepositoryImpl(
             emit(MediaResult.Error("Storage permission not granted"))
             return@flow
         }
-
+        emit(MediaResult.Loading)
         val items = queryMediaItems(filter.copy(albumIds = listOf(albumId)))
         if (items.isEmpty()) {
             emit(MediaResult.Empty)
         } else {
             emit(MediaResult.Success(items))
         }
-    }.flowOn(Dispatchers.IO)
+    }.flowOn(Dispatchers.IO).catch { exception ->
+        emit(MediaResult.Error("Error loading album: ${exception.message}"))
+    }
 
     override suspend fun getMediaItem(id: String): MediaItem? {
         if (!hasPermissions()) {

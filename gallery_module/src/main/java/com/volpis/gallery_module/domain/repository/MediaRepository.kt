@@ -12,7 +12,7 @@ interface MediaRepository {
     /**
      * Get all media items based on filter
      * @param filter The filter to apply to the query
-     * @return Flow of MediaResult
+     * @return Flow of [MediaResult]
      */
     suspend fun getMediaItems(filter: MediaFilter): Flow<MediaResult>
 
@@ -26,14 +26,14 @@ interface MediaRepository {
      * Get media items from a specific album
      * @param albumId The album ID
      * @param filter The filter to apply to the query
-     * @return Flow of MediaResult
+     * @return Flow of [MediaResult]
      */
     suspend fun getAlbumMediaItems(albumId: String, filter: MediaFilter): Flow<MediaResult>
 
     /**
      * Get a specific media item
      * @param id The media item ID
-     * @return MediaItem or null if not found
+     * @return [MediaItem] or null if not found
      */
     suspend fun getMediaItem(id: String): MediaItem?
 
