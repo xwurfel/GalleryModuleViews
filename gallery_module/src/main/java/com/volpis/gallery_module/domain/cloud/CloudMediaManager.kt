@@ -9,8 +9,7 @@ class CloudMediaManager {
 
     companion object {
         const val RC_GOOGLE_SIGN_IN = 9001
-        const val RC_DROPBOX_AUTH = 9002
-        const val RC_ONEDRIVE_AUTH = 9003
+        const val RC_CUSTOM_SIGN_IN = 9009
 
         @JvmStatic
         fun handleAuthResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
@@ -25,9 +24,7 @@ class CloudMediaManager {
             if (intent != null) {
                 val requestCode = when (providerType) {
                     CloudProviderType.GOOGLE_DRIVE -> RC_GOOGLE_SIGN_IN
-                    CloudProviderType.DROPBOX -> RC_DROPBOX_AUTH
-                    CloudProviderType.ONE_DRIVE -> RC_ONEDRIVE_AUTH
-                    CloudProviderType.CUSTOM -> RC_GOOGLE_SIGN_IN
+                    else -> RC_CUSTOM_SIGN_IN
                 }
                 context.startActivityForResult(intent, requestCode)
             }

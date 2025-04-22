@@ -136,7 +136,7 @@ class GoogleDriveRepository(
                         "Sign-in was cancelled by the user."
 
                     GoogleSignInStatusCodes.DEVELOPER_ERROR ->
-                        "Developer error: Your app is not properly configured. See CloudProviderSetup.getGoogleDriveSetupInstructions()."
+                        "Developer error: Your app is not properly configured. See README.md for instructions."
 
                     else -> "Sign-in failed with code: ${e.statusCode}"
                 }

@@ -84,9 +84,7 @@ class GalleryFragment : Fragment() {
                 val cloudRepos = config.cloudProviders.associateWith { providerType ->
                     when (providerType) {
                         CloudProviderType.GOOGLE_DRIVE -> GoogleDriveRepository(requireContext())
-                        CloudProviderType.DROPBOX -> throw NotImplementedError()
-                        CloudProviderType.ONE_DRIVE -> throw NotImplementedError()
-                        CloudProviderType.CUSTOM -> throw NotImplementedError()
+                        CloudProviderType.CUSTOM -> throw NotImplementedError("Please provide implementation for $providerType")
                     }
                 }
                 CompositeMediaRepository(deviceRepository, cloudRepos)

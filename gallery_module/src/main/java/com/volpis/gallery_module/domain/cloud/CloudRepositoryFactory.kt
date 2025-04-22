@@ -12,9 +12,7 @@ internal object CloudRepositoryFactory {
         return repositories.getOrPut(type) {
             when (type) {
                 CloudProviderType.GOOGLE_DRIVE -> GoogleDriveRepository(context.applicationContext)
-                CloudProviderType.DROPBOX -> throw NotImplementedError("Dropbox not yet implemented")
-                CloudProviderType.ONE_DRIVE -> throw NotImplementedError("OneDrive not yet implemented")
-                CloudProviderType.CUSTOM -> throw NotImplementedError("Custom provider not yet implemented")
+                CloudProviderType.CUSTOM -> throw NotImplementedError("Please provide implementation for $type")
             }
         }
     }

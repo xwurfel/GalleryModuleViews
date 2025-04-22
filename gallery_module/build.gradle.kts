@@ -79,7 +79,7 @@ dependencies {
         exclude(group = "org.apache.httpcomponents")
     }
 
-    implementation(libs.firebase.bom)
+    implementation(platform(libs.firebase.bom))
 
     implementation(libs.okhttp)
 

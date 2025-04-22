@@ -49,16 +49,11 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        // Let the cloud manager handle authentication results
         if (CloudMediaManager.handleAuthResult(requestCode, resultCode, data)) {
-            // Authentication was successful, we can proceed
-            // If you called GalleryBuilder.createCloudGallery() or addCloudProvider()
-            // with authenticate = true, you need to relaunch the gallery here
             GalleryBuilder.createCloudGallery(this) { selectedItems ->
                 showSelectedMediaInfo(selectedItems)
             }.launch(this, R.id.fragment_container)
         } else if (requestCode == CloudMediaManager.RC_GOOGLE_SIGN_IN) {
-            // Authentication failed
             Toast.makeText(this, "Google Sign-In failed", Toast.LENGTH_SHORT).show()
         }
     }
