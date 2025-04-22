@@ -1,4 +1,4 @@
-package com.volpis.gallery_module.data.repository
+package com.volpis.gallery_module.data.local.repository
 
 import android.content.ContentResolver
 import android.content.ContentUris

@@ -17,7 +17,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.volpis.gallery_module.R
-import com.volpis.gallery_module.data.repository.*
+import com.volpis.gallery_module.data.local.repository.DeviceMediaRepositoryImpl
+import com.volpis.gallery_module.data.remote.repository.GoogleDriveRepository
 import com.volpis.gallery_module.domain.cloud.CloudProviderType
 import com.volpis.gallery_module.domain.gallery.model.GalleryConfig
 import com.volpis.gallery_module.domain.gallery.model.ViewMode
@@ -82,10 +83,10 @@ class GalleryFragment : Fragment() {
             if (config.enableCloudIntegration && config.cloudProviders.isNotEmpty()) {
                 val cloudRepos = config.cloudProviders.associateWith { providerType ->
                     when (providerType) {
-                        CloudProviderType.GOOGLE_DRIVE -> GoogleDriveRepository()
-                        CloudProviderType.DROPBOX -> DropboxRepository()
-                        CloudProviderType.ONE_DRIVE -> OneDriveRepository()
-                        CloudProviderType.CUSTOM -> CustomCloudRepository()
+                        CloudProviderType.GOOGLE_DRIVE -> GoogleDriveRepository(requireContext())
+                        CloudProviderType.DROPBOX -> throw NotImplementedError()
+                        CloudProviderType.ONE_DRIVE -> throw NotImplementedError()
+                        CloudProviderType.CUSTOM -> throw NotImplementedError()
                     }
                 }
                 CompositeMediaRepository(deviceRepository, cloudRepos)

@@ -39,6 +39,11 @@
             android:layout_height="wrap_content"
             android:text="Custom Gallery" />
 
+        <Button
+            android:id="@+id/btn_cloud_gallery"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cloud Gallery" />
     </LinearLayout>
 
     <FrameLayout

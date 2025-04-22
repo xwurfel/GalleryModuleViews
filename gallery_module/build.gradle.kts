@@ -1,7 +1,10 @@
+import org.gradle.kotlin.dsl.implementation
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kapt)
+    id("com.google.gms.google-services")
     id("kotlin-parcelize")
 }
 
@@ -32,6 +35,17 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    packaging {
+        resources {
+            excludes.add("META-INF/DEPENDENCIES")
+            excludes.add("META-INF/LICENSE")
+            excludes.add("META-INF/LICENSE.txt")
+            excludes.add("META-INF/NOTICE")
+            excludes.add("META-INF/NOTICE.txt")
+            excludes.add("META-INF/ASL2.0")
+            excludes.add("META-INF/INDEX.LIST")
+        }
+    }
 }
 
 dependencies {
@@ -46,4 +60,27 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.glide)
     kapt(libs.lifecycle.compiler)
+
+    implementation (libs.play.services.auth)
+
+    implementation(libs.google.api.client.android) {
+        exclude(group = "org.apache.httpcomponents")
+    }
+
+    implementation(libs.google.api.services.drive) {
+        exclude(group = "org.apache.httpcomponents")
+    }
+
+    implementation(libs.google.http.client.gson) {
+        exclude(group = "org.apache.httpcomponents")
+    }
+
+    implementation(libs.google.auth.library.oauth2.http) {
+        exclude(group = "org.apache.httpcomponents")
+    }
+
+    implementation(libs.firebase.bom)
+
+    implementation(libs.okhttp)
+
 }

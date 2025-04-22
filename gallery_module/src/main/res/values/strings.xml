@@ -1,4 +1,5 @@
 <resources>
+    <string name="app_name">Gallery</string>
     <string name="default_gallery_title">Gallery</string>
     <string name="done">Done</string>
     <string name="default_selection_counter">%d selected</string>

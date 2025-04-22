@@ -1,9 +1,11 @@
 package com.volpis.gallery_module.domain.gallery.builder
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Typeface
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
+import com.volpis.gallery_module.domain.cloud.CloudMediaManager
 import com.volpis.gallery_module.domain.cloud.CloudProviderType
 import com.volpis.gallery_module.domain.gallery.model.GalleryConfig
 import com.volpis.gallery_module.domain.gallery.model.SelectionMode
@@ -374,6 +376,30 @@ class GalleryBuilder(private val context: Context) {
         }.commit()
     }
 
+    /**
+     * Adds cloud provider support to the gallery
+     * @param providerType The cloud provider to enable
+     * @param authenticate Whether to automatically trigger authentication if needed
+     */
+    fun addCloudProvider(
+        providerType: CloudProviderType,
+        authenticate: Boolean = false
+    ): GalleryBuilder {
+        configBuilder.setEnableCloudIntegration(true)
+        val providers = configBuilder.build().cloudProviders.toMutableList()
+        if (!providers.contains(providerType)) {
+            providers.add(providerType)
+        }
+        configBuilder.setCloudProviders(providers)
+
+        if (authenticate && context is Activity &&
+            !CloudMediaManager.isAuthenticated(context, providerType)) {
+            CloudMediaManager.authenticate(context, providerType)
+        }
+
+        return this
+    }
+
     companion object {
         /**
          * Creates a simple gallery builder with default configuration
@@ -443,6 +469,34 @@ class GalleryBuilder(private val context: Context) {
                     val videos = items.filter { it.type == MediaType.VIDEO }
                     onMediaSelected(videos)
                 }
+        }
+
+        /**
+         * Creates a gallery with Google Drive integration
+         * @param context Activity context
+         * @param authenticate Whether to automatically authenticate with Google Drive
+         * @param onMediaSelected Callback for selected media
+         */
+        @JvmStatic
+        fun createCloudGallery(
+            context: Activity,
+            authenticate: Boolean = true,
+            onMediaSelected: (List<MediaItem>) -> Unit
+        ): GalleryBuilder {
+            val builder = GalleryBuilder(context)
+                .setSelectionMode(SelectionMode.MULTIPLE)
+                .setDefaultViewMode(ViewMode.GRID)
+                .setGroupByAlbum(true)
+                .setEnableCloudIntegration(true)
+                .setCloudProviders(listOf(CloudProviderType.GOOGLE_DRIVE))
+                .setOnMediaSelected(onMediaSelected)
+
+            if (authenticate &&
+                !CloudMediaManager.isAuthenticated(context, CloudProviderType.GOOGLE_DRIVE)) {
+                CloudMediaManager.authenticate(context, CloudProviderType.GOOGLE_DRIVE)
+            }
+
+            return builder
         }
     }
 }

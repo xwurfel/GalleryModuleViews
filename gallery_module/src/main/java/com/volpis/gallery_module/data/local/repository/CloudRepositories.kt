@@ -1,4 +1,6 @@
-package com.volpis.gallery_module.data.repository
+package com.volpis.gallery_module.data.local.repository
+/*
+package com.volpis.gallery_module.data.local.repository
 
 
 import com.volpis.gallery_module.domain.media.model.MediaFilter
@@ -209,4 +211,4 @@ class CustomCloudRepository() : BaseCloudRepository() {
     override suspend fun authenticate(): Boolean {
         return false
     }
-}
+}*/
